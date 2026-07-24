@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: Quartz 5
+  pageTitle: 复盘笔记
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
@@ -215,8 +215,7 @@ plugins:
     enabled: true
     options:
       links:
-        GitHub: https://github.com/jackyzha0/quartz
-        Discord Community: https://discord.gg/cRFFHYye7t
+        GitHub: https://github.com/optlee/recap
   - source: "@quartz-community/recent-notes"
     enabled: false
   - source: "@quartz-community/spacer"

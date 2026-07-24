@@ -271,7 +271,9 @@ layout:
         beforeBody: []
         left: []
         right: []
-    content: {}
+    content:
+      exclude:
+        - explorer
     folder:
       exclude:
         - reader-mode

@@ -50,6 +50,13 @@ function createVisitorCounter(): QuartzComponent {
   return Comp
 }
 
+// register so afterDOMLoaded is collected by ComponentResources emitter
+componentRegistry.register(
+  "visitor-counter",
+  createVisitorCounter as QuartzComponentConstructor,
+  "quartz.ts",
+)
+
 const counter = componentRegistry.instantiate(
   createVisitorCounter as QuartzComponentConstructor,
   undefined,

@@ -694,18 +694,30 @@ export async function loadQuartzLayout(layoutOverrides?: {
   const HeadModule = await import("../../components/Head")
   const head = HeadModule.default()
 
-  // Find footer from component registry (loaded during plugin instantiation)
-  const footerEntry = json.plugins.find(
-    (e) => e.enabled && extractPluginName(e.source) === "footer",
-  )
+  // Find footer from component registry (loaded during plugin instantiation).
+  // extractPluginName("@quartz-community/footer") returns the full package name,
+  // so match by short name (last path segment) as well as exact "footer".
+  const footerEntry = json.plugins.find((e) => {
+    if (!e.enabled) return false
+    const name = extractPluginName(e.source)
+    const short = name.includes("/") ? (name.split("/").pop() ?? name) : name
+    return short === "footer" || name === "footer"
+  })
   let footer: QuartzComponent | undefined
   if (footerEntry) {
-    // Try registry lookup: plugin name ("footer") or export name ("Footer")
-    const footerReg = componentRegistry.get("footer") ?? componentRegistry.get("Footer")
+    // Try registry lookup: short name, export name, full package name
+    const footerName = extractPluginName(footerEntry.source)
+    const footerReg =
+      componentRegistry.get("footer") ??
+      componentRegistry.get("Footer") ??
+      componentRegistry.get(footerName) ??
+      componentRegistry.get(`${footerName}/Footer`)
     if (footerReg) {
       if (typeof footerReg.component === "function" && !("displayName" in footerReg.component)) {
         // It's a constructor — use registry cache for consistent instances
-        const footerOverrides = componentRegistry.getOptionOverrides("footer")
+        const footerOverrides =
+          componentRegistry.getOptionOverrides("footer") ??
+          componentRegistry.getOptionOverrides(footerName)
         const opts = { ...footerEntry.options, ...footerOverrides }
         footer = componentRegistry.instantiate(
           footerReg.component as QuartzComponentConstructor,

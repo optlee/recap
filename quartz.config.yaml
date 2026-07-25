@@ -5,7 +5,8 @@ configuration:
   enableSPA: true
   enablePopovers: true
   analytics:
-    provider: plausible
+    provider: goatcounter
+    websiteId: optlee
   locale: en-US
   baseUrl: optlee.github.io/recap
   ignorePatterns:
@@ -207,6 +208,11 @@ plugins:
     layout:
       position: afterBody
       priority: 10
+  - source: "./.quartz/plugins/visitor-counter"
+    enabled: true
+    layout:
+      position: left
+      priority: 70
   - source: "@quartz-community/footer"
     enabled: true
     options:

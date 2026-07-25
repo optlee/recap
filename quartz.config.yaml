@@ -80,8 +80,7 @@ plugins:
       markdownLinkResolution: shortest
     order: 60
   - source: "@quartz-community/description"
-    enabled: true
-    order: 70
+    enabled: false
   - source: "@quartz-community/latex"
     enabled: true
     options:
@@ -220,7 +219,6 @@ plugins:
     options:
       includeAll: false
       includedProperties:
-        - description
         - tags
         - aliases
       excludedProperties: []

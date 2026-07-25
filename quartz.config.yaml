@@ -146,10 +146,7 @@ plugins:
   - source: "@quartz-community/explorer"
     enabled: false
   - source: "@quartz-community/graph"
-    enabled: true
-    layout:
-      position: left
-      priority: 30
+    enabled: false
   - source: "@quartz-community/search"
     enabled: true
     layout:
@@ -208,11 +205,6 @@ plugins:
     layout:
       position: afterBody
       priority: 10
-  - source: "./.quartz/plugins/visitor-counter"
-    enabled: true
-    layout:
-      position: left
-      priority: 70
   - source: "@quartz-community/footer"
     enabled: true
     options:

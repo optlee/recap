@@ -71,7 +71,7 @@ plugins:
     enabled: true
     order: 50
     layout:
-      position: right
+      position: left
       priority: 30
   - source: "@quartz-community/crawl-links"
     enabled: true
@@ -143,39 +143,21 @@ plugins:
   - source: "@quartz-community/tag-page"
     enabled: true
   - source: "@quartz-community/explorer"
-    enabled: true
-    options:
-      title: 目录
-      sortFn: |-
-        (a, b) => {
-          if (!a.isFolder && !b.isFolder || a.isFolder && b.isFolder) {
-            return b.displayName.localeCompare(a.displayName, void 0, {numeric: true, sensitivity: 'base'});
-          }
-          if (!a.isFolder && b.isFolder) {
-            return 1;
-          }
-          return -1;
-        }
-    layout:
-      position: left
-      priority: 50
+    enabled: false
   - source: "@quartz-community/graph"
-    enabled: true
-    layout:
-      position: right
-      priority: 10
-  - source: "@quartz-community/search"
     enabled: true
     layout:
       position: left
       priority: 20
-      group: toolbar
-      groupOptions:
-        grow: true
+  - source: "@quartz-community/search"
+    enabled: true
+    layout:
+      position: left
+      priority: 5
   - source: "@quartz-community/backlinks"
     enabled: true
     layout:
-      position: right
+      position: left
       priority: 50
   - source: "@quartz-community/article-title"
     enabled: true
@@ -195,20 +177,18 @@ plugins:
   - source: "@quartz-community/page-title"
     enabled: true
     layout:
-      position: left
-      priority: 10
+      position: beforeBody
+      priority: 3
   - source: "@quartz-community/darkmode"
     enabled: true
     layout:
       position: left
-      priority: 30
-      group: toolbar
+      priority: 10
   - source: "@quartz-community/reader-mode"
     enabled: true
     layout:
       position: left
-      priority: 35
-      group: toolbar
+      priority: 15
   - source: "@quartz-community/breadcrumbs"
     enabled: true
     layout:
@@ -231,13 +211,7 @@ plugins:
   - source: "@quartz-community/recent-notes"
     enabled: false
   - source: "@quartz-community/spacer"
-    enabled: true
-    options: {}
-    order: 25
-    layout:
-      position: left
-      priority: 25
-      display: mobile-only
+    enabled: false
   - source: "@quartz-community/bases-page"
     enabled: true
     options: {}
@@ -275,12 +249,8 @@ layout:
     folder:
       exclude:
         - reader-mode
-      positions:
-        right: []
     tag:
       exclude:
         - reader-mode
-      positions:
-        right: []
     canvas: {}
     bases: {}

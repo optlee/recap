@@ -164,11 +164,13 @@ plugins:
     layout:
       position: beforeBody
       priority: 10
+      condition: not-index
   - source: "@quartz-community/content-meta"
     enabled: true
     layout:
       position: beforeBody
       priority: 20
+      condition: not-index
   - source: "@quartz-community/tag-list"
     enabled: false
     layout:
@@ -235,6 +237,7 @@ plugins:
       position: beforeBody
       priority: 15
       display: all
+      condition: not-index
 layout:
   groups:
     sidebar-actions:
@@ -251,6 +254,9 @@ layout:
     folder:
       exclude:
         - reader-mode
+        - "@quartz-community/article-title"
+        - "@quartz-community/note-properties"
+        - "@quartz-community/content-meta"
     tag:
       exclude:
         - reader-mode

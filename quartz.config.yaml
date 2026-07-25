@@ -184,11 +184,13 @@ plugins:
     layout:
       position: left
       priority: 10
+      group: sidebar-actions
   - source: "@quartz-community/reader-mode"
     enabled: true
     layout:
       position: left
-      priority: 15
+      priority: 10
+      group: sidebar-actions
   - source: "@quartz-community/breadcrumbs"
     enabled: true
     layout:
@@ -235,10 +237,10 @@ plugins:
       display: all
 layout:
   groups:
-    toolbar:
-      priority: 35
+    sidebar-actions:
+      priority: 10
       direction: row
-      gap: 0.5rem
+      gap: 1rem
   byPageType:
     "404":
       positions:

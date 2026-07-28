@@ -1,7 +1,11 @@
 import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/config-loader"
 import { componentRegistry } from "./quartz/components/registry"
+import { registerCondition } from "./quartz/plugins/loader/conditions"
 import { jsx as _jsx } from "preact/jsx-runtime"
 import type { QuartzComponent, QuartzComponentConstructor } from "./quartz/components/types"
+
+// custom conditions
+registerCondition("is-index", (props) => props.fileData.slug === "index")
 
 const config = await loadQuartzConfig()
 export default config

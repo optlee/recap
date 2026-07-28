@@ -151,6 +151,7 @@ plugins:
     layout:
       position: left
       priority: 5
+      condition: is-index
   - source: "@quartz-community/backlinks"
     enabled: true
     layout:
@@ -184,12 +185,14 @@ plugins:
       position: left
       priority: 10
       group: sidebar-actions
+      condition: is-index
   - source: "@quartz-community/reader-mode"
     enabled: true
     layout:
       position: left
       priority: 10
       group: sidebar-actions
+      condition: is-index
   - source: "@quartz-community/breadcrumbs"
     enabled: true
     layout:

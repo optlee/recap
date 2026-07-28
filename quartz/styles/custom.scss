@@ -11,23 +11,34 @@
       "grid-sidebar-left grid-center"
       "grid-sidebar-left grid-footer";
 
-    // header spacing
+    // header spacing (tight: less empty space above title / meta)
     & .page-header {
-      margin-bottom: 3rem;
-      padding-bottom: 1rem;
+      margin-top: $topSpacing;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--lightgray);
     }
 
-    // sidebar: always visible, single clean scrollbar
+    // sidebar: always visible, single clean scrollbar; align top with center
     & .sidebar.left {
       position: sticky;
       top: 0;
       max-height: 100vh;
       overflow-y: auto;
+      // base.scss uses $topSpacing for top padding — keep sides/bottom comfortable
+      padding-top: $topSpacing;
+      padding-bottom: 1.25rem;
       // hide TOC's internal overflow — sidebar handles all scrolling
       .overflow {
         max-height: none !important;
         overflow-y: visible !important;
+      }
+    }
+
+    & .center {
+      // pull first article content up slightly after tighter header
+      > article {
+        margin-top: 0;
       }
     }
 

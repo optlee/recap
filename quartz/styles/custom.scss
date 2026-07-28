@@ -1,6 +1,6 @@
 @use "./variables.scss" as *;
 
-// ── 2-column layout: sidebar (left) + article (960px) ──
+// ── Wikipedia-style sidebar: scrolls with page, no fixed height, narrower ──
 .page {
   max-width: calc(960px + $sidePanelWidth);
 
@@ -12,11 +12,18 @@
       "grid-sidebar-left grid-center"
       "grid-sidebar-left grid-footer";
 
-    // spacing below header (page-title), larger to match original gap
+    // header spacing
     & .page-header {
       margin-bottom: 3rem;
       padding-bottom: 1rem;
       border-bottom: 1px solid var(--lightgray);
+    }
+
+    // sidebar: natural height, scrolls with page, no internal scroll
+    & .sidebar.left {
+      height: auto;
+      position: relative;
+      overflow-y: visible;
     }
 
     @media all and ($tablet) {

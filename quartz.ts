@@ -24,13 +24,28 @@ const layout = await loadQuartzLayout()
 // endpoint, which works without that setting.
 
 const counterCss = `
+/* Scroll region holds explorer + TOC; counter is a non-overlapping footer. */
+.left.sidebar > .sidebar-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  -webkit-overflow-scrolling: touch;
+}
 .visitor-counter {
-  margin-top: auto;
-  padding-top: 1rem;
+  flex: 0 0 auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0.75rem 0 0.15rem;
   border-top: 1px solid var(--lightgray);
+  background: var(--light);
   font-size: 0.8rem;
   color: var(--gray);
   text-align: center;
+  z-index: 2;
 }
 .visitor-counter .label {
   display: block;
@@ -39,6 +54,14 @@ const counterCss = `
 .visitor-counter #gc-visit-count {
   font-variant-numeric: tabular-nums;
   color: var(--darkgray);
+}
+@media (max-width: 800px) {
+  .left.sidebar > .sidebar-scroll {
+    overflow: visible;
+    flex: none;
+    min-height: 0;
+    gap: 0;
+  }
 }
 `
 
@@ -59,10 +82,46 @@ function createVisitorCounter(): QuartzComponent {
   var CODE = "optlee"
   var filled = false
 
-  function ensureEl() {
-    var el = document.getElementById("gc-visit-count")
-    if (el) return el
+  // Keep explorer/TOC in a scrollable region; pin visit count under it
+  // so a long TOC never paints over the counter.
+  function ensureSidebarStructure() {
     var sidebar = document.querySelector(".left.sidebar")
+    if (!sidebar) return null
+
+    var scroll = sidebar.querySelector(":scope > .sidebar-scroll")
+    if (!scroll) {
+      scroll = document.createElement("div")
+      scroll.className = "sidebar-scroll"
+      var moving = []
+      for (var i = 0; i < sidebar.childNodes.length; i++) {
+        var n = sidebar.childNodes[i]
+        if (n.nodeType === 1 && n.classList && n.classList.contains("visitor-counter")) continue
+        moving.push(n)
+      }
+      for (var j = 0; j < moving.length; j++) scroll.appendChild(moving[j])
+      var counter = sidebar.querySelector(":scope > .visitor-counter")
+      if (counter) sidebar.insertBefore(scroll, counter)
+      else sidebar.appendChild(scroll)
+    } else {
+      // SPA may re-inject siblings outside the scroll shell
+      var kids = Array.prototype.slice.call(sidebar.children)
+      for (var k = 0; k < kids.length; k++) {
+        var c = kids[k]
+        if (c === scroll) continue
+        if (c.classList && c.classList.contains("visitor-counter")) continue
+        scroll.appendChild(c)
+      }
+    }
+    return sidebar
+  }
+
+  function ensureEl() {
+    var existing = document.getElementById("gc-visit-count")
+    if (existing) {
+      ensureSidebarStructure()
+      return existing
+    }
+    var sidebar = ensureSidebarStructure()
     if (!sidebar) return null
     var wrap = document.createElement("div")
     wrap.className = "visitor-counter"
@@ -178,10 +237,13 @@ function createTocActiveTracker(): QuartzComponent {
   }
 
   function ensureActiveInSidebar(el) {
-    var sidebar = document.querySelector(".left.sidebar")
-    if (!sidebar || !el) return
+    // Prefer the scrollable shell so sticky visit-count footer is not scrolled over.
+    var scroller =
+      document.querySelector(".left.sidebar > .sidebar-scroll") ||
+      document.querySelector(".left.sidebar")
+    if (!scroller || !el) return
     var aRect = el.getBoundingClientRect()
-    var sRect = sidebar.getBoundingClientRect()
+    var sRect = scroller.getBoundingClientRect()
     var pad = 12
     if (aRect.top < sRect.top + pad || aRect.bottom > sRect.bottom - pad) {
       el.scrollIntoView({ block: "nearest", behavior: "smooth" })

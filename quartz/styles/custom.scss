@@ -19,19 +19,55 @@
       border-bottom: 1px solid var(--lightgray);
     }
 
-    // sidebar: always visible, single clean scrollbar; align top with center
+    // sidebar: sticky column; scroll only .sidebar-scroll so visit counter
+    // stays pinned under the rail and never overlaps a long TOC
     & .sidebar.left {
       position: sticky;
       top: 0;
+      height: 100vh;
       max-height: 100vh;
-      overflow-y: auto;
+      overflow: hidden; // scroll lives on .sidebar-scroll, not the whole rail
+      display: flex;
+      flex-direction: column;
       // base.scss uses $topSpacing for top padding — keep sides/bottom comfortable
       padding-top: $topSpacing;
-      padding-bottom: 1.25rem;
-      // hide TOC's internal overflow — sidebar handles all scrolling
+      padding-bottom: 0.75rem;
+      box-sizing: border-box;
+
+      > .sidebar-scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      > .visitor-counter {
+        flex: 0 0 auto;
+      }
+
+      // hide TOC's internal overflow — .sidebar-scroll handles scrolling
       .overflow {
         max-height: none !important;
         overflow-y: visible !important;
+      }
+    }
+
+    @media all and ($mobile) {
+      & .sidebar.left {
+        position: initial;
+        height: unset;
+        max-height: none;
+        overflow: visible;
+        padding-bottom: 0.5rem;
+
+        > .sidebar-scroll {
+          overflow: visible;
+          flex: none;
+          min-height: 0;
+        }
       }
     }
 
@@ -68,44 +104,27 @@
 .left.sidebar .toc {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  // Do not flex-grow into the visit-count footer; length is natural,
+  // and .sidebar-scroll clips/scrolls when the TOC is long.
+  flex: 0 0 auto;
   min-height: 0;
-  margin-top: 0.35rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--lightgray);
+  // No section chrome: title + top/bottom rules are hidden; only the list shows.
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top: none;
+  border-bottom: none;
   overflow: visible;
 }
 
+// Hide "Table of Contents" header (and its fold control)
 .left.sidebar button.toc-header {
-  gap: 0.25rem;
-  margin-bottom: 0.15rem;
-  color: var(--gray);
-
-  h3 {
-    font-size: 0.78rem;
-    font-weight: $semiBoldWeight;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--gray);
-  }
-
-  .fold {
-    width: 1rem;
-    height: 1rem;
-    opacity: 0.65;
-  }
-
-  &:hover {
-    color: var(--dark);
-
-    h3 {
-      color: var(--dark);
-    }
-  }
+  display: none !important;
 }
 
 .left.sidebar ul.toc-content.overflow {
-  margin: 0.4rem 0 0;
+  margin: 0;
   padding: 0;
   border-left: 1px solid var(--lightgray);
   list-style: none;
@@ -184,7 +203,8 @@
   .left.sidebar .toc {
     width: 100%;
     border-top: none;
-    padding-top: 0.5rem;
+    border-bottom: none;
+    padding-top: 0;
   }
 
   .left.sidebar ul.toc-content.overflow > li > a {

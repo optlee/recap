@@ -1,6 +1,5 @@
 @use "./variables.scss" as *;
 
-// ── Wikipedia-style sidebar: scrolls with page, no fixed height, narrower ──
 .page {
   max-width: calc(960px + $sidePanelWidth);
 
@@ -19,11 +18,17 @@
       border-bottom: 1px solid var(--lightgray);
     }
 
-    // sidebar: natural height, scrolls with page, no internal scroll
+    // sidebar: always visible, single clean scrollbar
     & .sidebar.left {
-      height: auto;
-      position: relative;
-      overflow-y: visible;
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+      overflow-y: auto;
+      // hide TOC's internal overflow — sidebar handles all scrolling
+      .overflow {
+        max-height: none !important;
+        overflow-y: visible !important;
+      }
     }
 
     @media all and ($tablet) {
@@ -39,5 +44,140 @@
         "grid-center"
         "grid-footer";
     }
+  }
+}
+
+// ============================================================================
+// Wikipedia-style table of contents (left rail)
+// ============================================================================
+// Built-in TOC only toggles `.in-view` (all headings above viewport bottom).
+// We style the full list for readability, and reserve strong emphasis for
+// `.active` (set by toc-active-tracker in quartz.ts = current section only).
+
+.left.sidebar .toc {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 0.35rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--lightgray);
+  overflow: visible;
+}
+
+.left.sidebar button.toc-header {
+  gap: 0.25rem;
+  margin-bottom: 0.15rem;
+  color: var(--gray);
+
+  h3 {
+    font-size: 0.78rem;
+    font-weight: $semiBoldWeight;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .fold {
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.65;
+  }
+
+  &:hover {
+    color: var(--dark);
+
+    h3 {
+      color: var(--dark);
+    }
+  }
+}
+
+.left.sidebar ul.toc-content.overflow {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  border-left: 1px solid var(--lightgray);
+  list-style: none;
+
+  // Reset depth padding on <li>; indent is applied on the link itself.
+  > li {
+    margin: 0;
+    padding-left: 0 !important;
+  }
+
+  > li > a {
+    display: block;
+    position: relative;
+    box-sizing: border-box;
+    margin: 0 0 0 -1px; // sit on the rail border
+    padding: 0.32rem 0.55rem 0.32rem 0.7rem;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    color: var(--darkgray);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    // Override stock TOC opacity (0.35 / 0.75) — wiki keeps links readable.
+    opacity: 1 !important;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      font-weight 0.15s ease;
+
+    &:hover {
+      color: var(--secondary);
+      background-color: var(--highlight);
+    }
+
+    // Sections already scrolled past (stock class) — slightly quieter than active.
+    &.in-view {
+      color: var(--darkgray);
+      opacity: 1 !important;
+    }
+
+    // Current section only (from scroll tracker)
+    &.active {
+      color: var(--secondary);
+      font-weight: $semiBoldWeight;
+      border-left-color: var(--secondary);
+      background-color: var(--highlight);
+    }
+  }
+
+  // Hierarchical indent (similar to Vector TOC)
+  > li.depth-0 > a {
+    padding-left: 0.7rem;
+  }
+  > li.depth-1 > a {
+    padding-left: 1.15rem;
+  }
+  > li.depth-2 > a {
+    padding-left: 1.6rem;
+    font-size: 0.84rem;
+  }
+  > li.depth-3 > a {
+    padding-left: 2.05rem;
+    font-size: 0.82rem;
+  }
+  > li.depth-4 > a,
+  > li.depth-5 > a,
+  > li.depth-6 > a {
+    padding-left: 2.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+// Mobile: keep the same hierarchy, slightly denser
+@media all and ($mobile) {
+  .left.sidebar .toc {
+    width: 100%;
+    border-top: none;
+    padding-top: 0.5rem;
+  }
+
+  .left.sidebar ul.toc-content.overflow > li > a {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
   }
 }

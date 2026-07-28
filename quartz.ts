@@ -146,4 +146,131 @@ componentRegistry.register(
 // Instantiate once so getAllComponents() reuses a single afterDOMLoaded script.
 componentRegistry.instantiate(createVisitorCounter as QuartzComponentConstructor, undefined)
 
+// ── TOC: current-section active highlight (Wikipedia-style) ──
+// Stock TOC marks every heading above the viewport bottom with `.in-view`.
+// We compute a single `.active` link = last heading whose top is above a
+// reading offset near the top of the viewport, and keep it scrolled into view
+// inside the left sidebar.
+function createTocActiveTracker(): QuartzComponent {
+  const Comp = (_props: any) => null
+  Comp.afterDOMLoaded = `
+;(function () {
+  var OFFSET = 120
+  var raf = null
+  var lastActive = null
+  var scrollHandler = null
+  var resizeHandler = null
+
+  function articleHeadings() {
+    return Array.prototype.slice.call(
+      document.querySelectorAll(
+        ".center article h1[id], .center article h2[id], .center article h3[id], .center article h4[id], .center article h5[id], .center article h6[id]",
+      ),
+    )
+  }
+
+  function tocAnchors() {
+    return Array.prototype.slice.call(document.querySelectorAll(".toc a[data-for]"))
+  }
+
+  function ensureActiveInSidebar(el) {
+    var sidebar = document.querySelector(".left.sidebar")
+    if (!sidebar || !el) return
+    var aRect = el.getBoundingClientRect()
+    var sRect = sidebar.getBoundingClientRect()
+    var pad = 12
+    if (aRect.top < sRect.top + pad || aRect.bottom > sRect.bottom - pad) {
+      el.scrollIntoView({ block: "nearest", behavior: "smooth" })
+    }
+  }
+
+  function update() {
+    var headings = articleHeadings()
+    var links = tocAnchors()
+    if (!headings.length || !links.length) return
+
+    var activeId = null
+    for (var i = 0; i < headings.length; i++) {
+      if (headings[i].getBoundingClientRect().top <= OFFSET) {
+        activeId = headings[i].id
+      } else {
+        break
+      }
+    }
+    if (!activeId) activeId = headings[0].id
+
+    if (activeId === lastActive) {
+      // Still refresh classes in case SPA replaced nodes with same id
+    }
+
+    var activeEl = null
+    for (var j = 0; j < links.length; j++) {
+      var a = links[j]
+      var forId = a.getAttribute("data-for")
+      if (forId === activeId) {
+        a.classList.add("active")
+        a.setAttribute("aria-current", "location")
+        activeEl = a
+      } else {
+        a.classList.remove("active")
+        a.removeAttribute("aria-current")
+      }
+    }
+
+    if (activeId !== lastActive) {
+      lastActive = activeId
+      ensureActiveInSidebar(activeEl)
+    }
+  }
+
+  function schedule() {
+    if (raf != null) return
+    raf = window.requestAnimationFrame(function () {
+      raf = null
+      update()
+    })
+  }
+
+  function unbind() {
+    if (scrollHandler) {
+      window.removeEventListener("scroll", scrollHandler, true)
+      scrollHandler = null
+    }
+    if (resizeHandler) {
+      window.removeEventListener("resize", resizeHandler)
+      resizeHandler = null
+    }
+    lastActive = null
+  }
+
+  function bind() {
+    unbind()
+    scrollHandler = schedule
+    resizeHandler = schedule
+    window.addEventListener("scroll", scrollHandler, { passive: true, capture: true })
+    window.addEventListener("resize", resizeHandler, { passive: true })
+    // Defer one frame so SPA-replaced article + TOC are both in the DOM
+    schedule()
+    window.setTimeout(update, 50)
+  }
+
+  document.addEventListener("nav", bind)
+  document.addEventListener("render", bind)
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bind)
+  } else {
+    bind()
+  }
+})()
+  `
+  return Comp
+}
+
+componentRegistry.register(
+  "toc-active-tracker",
+  createTocActiveTracker as QuartzComponentConstructor,
+  "quartz.ts",
+)
+componentRegistry.instantiate(createTocActiveTracker as QuartzComponentConstructor, undefined)
+
 export { layout }

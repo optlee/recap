@@ -1,0 +1,40 @@
+{
+  "name": "folder-page-title-sort",
+  "version": "1.0.0",
+  "description": "Folder page with title-descending list sort (wrap of @quartz-community/folder-page)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@quartz-community/folder-page": "^0.1.0"
+  },
+  "quartz": {
+    "name": "folder-page-title-sort",
+    "displayName": "Folder Page (title desc)",
+    "category": [
+      "pageType",
+      "component"
+    ],
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {
+      "showFolderCount": true,
+      "showSubfolders": true
+    },
+    "optionSchema": {
+      "showFolderCount": {
+        "type": "boolean"
+      },
+      "showSubfolders": {
+        "type": "boolean"
+      }
+    }
+  }
+}

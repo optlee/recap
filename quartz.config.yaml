@@ -64,6 +64,7 @@ plugins:
     options:
       enableInHtmlEmbed: false
       enableCheckbox: true
+      parseTags: false  # 禁止把正文行内 #N 解析成 Obsidian 标签（复盘报告的榜单序号/规则编号会被误渲染，2026-09-14）
     order: 30
   - source: "@quartz-community/github-flavored-markdown"
     enabled: true
@@ -141,7 +142,7 @@ plugins:
   - source: "./quartz/plugins-local/folder-page-title-sort"
     enabled: true
   - source: "@quartz-community/tag-page"
-    enabled: true
+    enabled: false  # 行内标签解析已关（parseTags: false），零标签时此插件只剩空的 /tags 索引页，一并停用（2026-09-14）
   - source: "@quartz-community/explorer"
     enabled: false
   - source: "@quartz-community/graph"
